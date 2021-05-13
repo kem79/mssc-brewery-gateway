@@ -7,26 +7,27 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 /**
- * Created by marecm on 5/10/2021
+ * Created by marecm on 5/13/2021
  */
-@Profile("!local-discovery")
+@Profile("local-discovery")
 @Configuration
-public class LocalHostRouteConfig {
+public class LocalLoadBalancedRoutesConfig {
 
     @Bean
-    public RouteLocator localHostRoutes(RouteLocatorBuilder builder){
+    public RouteLocator localBalancedRoutes(RouteLocatorBuilder builder){
         return builder.routes()
                 .route("beer-service",
                         r-> r.path("/api/v1/beer*", "/api/v1/beer/*", "/api/v1/beerUpc/*")
-                                .uri("http://localhost:8080"))
+                                .uri("lb://beer-service"))
                 .route("order-service",
                         r->r.path("/api/v1/customers/**"
-                                )
-                                .uri("http://localhost:8083"))
+                        )
+                                .uri("lb://order-service"))
                 .route("inventory-service",
                         r->r.path("/api/v1/beer/*/inventory"
-                                )
-                                .uri("http://localhost:8082"))
+                        )
+                                .uri("lb://inventory-service"))
                 .build();
     }
+
 }
